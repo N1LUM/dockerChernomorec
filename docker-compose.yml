@@ -93,6 +93,19 @@ services:
       - ./keys:/retool_backend/keys
     restart: on-failure
 
+  cherno:
+    image: postgres:latest
+    build:
+      context: .
+    env_file:
+      - cherno/docker.env
+    ports:
+      - "8000:5432"
+    volumes:
+      - "./cherno:/docker-entrypoint-initdb.d"
+      - cherno:/app/data
+      - ./data/cherno:/app/data
+
   workflows-worker:
     build:
       context: ./
@@ -128,6 +141,7 @@ services:
       - db-connector-network
     volumes:
       - data:/var/lib/postgresql/data
+      - ./data/data:/var/lib/postgresql/data
 
   retooldb-postgres:
     image: "postgres:14.3"
@@ -137,6 +151,7 @@ services:
       - db-connector-network
     volumes:
       - retooldb-data:/var/lib/postgresql/data
+      - ./data/retool-data:/var/lib/postgresql/data
 
   # Not required, but leave this container to use nginx for handling the frontend & SSL certification
   https-portal:
@@ -169,3 +184,4 @@ volumes:
   ssh:
   data:
   retooldb-data:
+  cherno:
